@@ -114,7 +114,8 @@ def main():
             # use config filename as default work_dir if cfg.work_dir is None
             cfg.work_dir = osp.join('./work_dirs', os.path.join(osp.splitext(osp.basename(args.config))[0],
                                                                 test_config.split('/')[-1].split('.')[0]))
-
+        cfg.work_dir = osp.join('./work_dirs', os.path.join(osp.splitext(osp.basename(args.config))[0],
+                                                            test_config.split('/')[-1].split('.')[0]))
         cfg.load_from = args.checkpoint
 
         if args.show or args.show_dir:
