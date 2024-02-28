@@ -1,0 +1,13 @@
+weights_path: "/home/xmuairmud/jyx/DIFT-DA-Seg/weights/aggregation_network.pt"
+projection_dim: 384
+model_id: "runwayml/stable-diffusion-v1-5"
+diffusion_mode: "inversion"
+input_resolution: [512, 1024] # H, W
+# output_resolution: [720, 1280]
+batch_size: 1
+prompt: ""
+negative_prompt: ""
+guidance_scale: -1
+# Subsample every 5 steps
+save_timestep: [49, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0]
+num_timesteps: 50

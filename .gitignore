@@ -1,0 +1,8 @@
+/data/
+/work_dirs/
+/.dist_test/
+/work_dirs_*/
+/*.zip
+/.idea/
+/work_logs
+/stable-diffusion-v1-5
