@@ -8,7 +8,7 @@ backend_args = None
 train_pipeline = [
     dict(type='LoadImageFromFile', backend_args=backend_args),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='RandomResize', scale=[(2048, 800), (2048, 1024)], keep_ratio=True),
+    dict(type='RandomResize', scale=[(1280, 600), (1280, 720)], keep_ratio=True),
     dict(type='RandomCrop', crop_type='absolute', crop_size=(512, 512),
          recompute_bbox=True, allow_negative_crop=True),
     dict(type='FilterAnnotations', min_gt_bbox_wh=(1e-2, 1e-2)),
