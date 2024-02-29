@@ -123,8 +123,8 @@ test_pipeline = [
                    'scale_factor'))
 ]
 
-batch_size = 8
-num_workers = 2
+batch_size = 16
+num_workers = 8
 
 labeled_dataset = dict(
     type=dataset_type,
@@ -155,7 +155,7 @@ train_dataloader = dict(
         type='ConcatDataset', datasets=[labeled_dataset, unlabeled_dataset]))
 
 val_dataloader = dict(
-    batch_size=8,
+    batch_size=2,
     num_workers=2,
     persistent_workers=True,
     drop_last=False,
