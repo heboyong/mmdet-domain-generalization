@@ -37,7 +37,7 @@ param_scheduler = [
         begin=0,
         end=20000,
         by_epoch=False,
-        milestones=[20000],
+        milestones=[18000],
         gamma=0.1)
 ]
 optim_wrapper = dict(
