@@ -1,7 +1,7 @@
 # dataset settings
 dataset_type = 'CocoDataset'
 data_root = 'data/'
-classes = ('bicycle', 'bus', 'car', 'motorcycle', 'person', 'rider', 'train', 'truck')
+classes = ('car', )
 
 backend_args = None
 
