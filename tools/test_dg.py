@@ -68,7 +68,7 @@ def main():
 
     config_list = None
     if 'dwd' in args.config:
-        config_list = ['DA/_base_/datasets/domain_generalization/test_dwd_daytime_sunny.py',
+        config_list = [
                        'DA/_base_/datasets/domain_generalization/test_dwd_daytime_foggy.py',
                        'DA/_base_/datasets/domain_generalization/test_dwd_dusk_rainy.py',
                        'DA/_base_/datasets/domain_generalization/test_dwd_night_rainy.py',
