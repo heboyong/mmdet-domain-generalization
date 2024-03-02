@@ -17,7 +17,7 @@ test_pipeline = [
 ]
 
 val_dataloader = dict(
-    batch_size=8,
+    batch_size=2,
     num_workers=8,
     persistent_workers=True,
     drop_last=False,
@@ -26,8 +26,8 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         metainfo=dict(classes=classes),
-        ann_file='foggy_cityscapes/test.json',
-        data_prefix=dict(img='foggy_cityscapes/JPEGImages/'),
+        ann_file='BDD100K/bdd100k/val.json',
+        data_prefix=dict(img='BDD100K/bdd100k/bdd100k/bdd100k/images/100k/val/'),
         test_mode=True,
         filter_cfg=dict(filter_empty_gt=True),
         pipeline=test_pipeline))
@@ -35,7 +35,7 @@ test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'foggy_cityscapes/test.json',
+    ann_file=data_root + 'BDD100K/bdd100k/val.json',
     metric='bbox',
     format_only=False)
 test_evaluator = val_evaluator
