@@ -18,9 +18,9 @@ from tools.analysis_tools.robustness_eval import get_results
 def parse_args():
     parser = argparse.ArgumentParser(description='MMDet test detector')
     parser.add_argument('--config', help='test config file path',
-                        default='work_dirs/faster-rcnn_r101_fpn_city_source/faster-rcnn_r101_fpn_city_source.py')
+                        default='work_dirs_all/faster-rcnn_r101_fpn_city_source/faster-rcnn_r101_fpn_city_source.py')
     parser.add_argument('--checkpoint', help='checkpoint file',
-                        default='work_dirs/faster-rcnn_r101_fpn_city_source/best_coco_bbox_mAP_50_iter_20000.pth')
+                        default='work_dirs_all/faster-rcnn_r101_fpn_city_source/iter_20000.pth')
     parser.add_argument(
         '--out',
         type=str,

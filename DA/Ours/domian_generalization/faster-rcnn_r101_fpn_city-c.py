@@ -1,6 +1,6 @@
 _base_ = [
     '../../_base_/models/faster-rcnn_r101_fpn.py',
-    '../../_base_/da_setting/da_20k_0.1backbone.py',
+    '../../_base_/da_setting/da_80k_0.1backbone.py',
     '../../_base_/datasets/domain_generalization/cityscapes-c.py'
 ]
 
