@@ -1,7 +1,7 @@
 # dataset settings
 dataset_type = 'CocoDataset'
 data_root = 'data/'
-classes = ('bicycle', 'bus', 'car', 'motorcycle', 'person', 'rider', 'truck')
+classes = ('car', )
 
 backend_args = None
 
@@ -76,7 +76,7 @@ _pipeline = [
 sup_pipeline = [
     dict(type='LoadImageFromFile', backend_args=backend_args),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='RandomResize', scale=[(1280, 600), (1280, 720)], keep_ratio=True),
+    dict(type='Resize', scale=(1333, 800), keep_ratio=True),
     dict(
         type='RandomCrop',
         crop_type='absolute',
@@ -97,7 +97,7 @@ sup_pipeline = [
 unsup_pipeline = [
     dict(type='LoadImageFromFile', backend_args=backend_args),
     dict(type='LoadEmptyAnnotations'),
-    dict(type='RandomResize', scale=[(1280, 600), (1280, 720)], keep_ratio=True),
+    dict(type='Resize', scale=(1333, 800), keep_ratio=True),
     dict(
         type='RandomCrop',
         crop_type='absolute',
@@ -116,7 +116,7 @@ unsup_pipeline = [
 
 test_pipeline = [
     dict(type='LoadImageFromFile', backend_args=backend_args),
-    dict(type='Resize', scale=(2048, 1024), keep_ratio=True),
+    dict(type='Resize', scale=(1333, 800), keep_ratio=True),
     dict(
         type='PackDetInputs',
         meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
@@ -130,8 +130,8 @@ labeled_dataset = dict(
     type=dataset_type,
     data_root=data_root,
     metainfo=dict(classes=classes),
-    ann_file='DWD/Daytime_Sunny/train.json',
-    data_prefix=dict(img='DWD/Daytime_Sunny/JPEGImages/'),
+    ann_file='sim10k/train.json',
+    data_prefix=dict(img='sim10k/JPEGImages/'),
     filter_cfg=dict(filter_empty_gt=True),
     pipeline=sup_pipeline)
 
@@ -139,8 +139,8 @@ unlabeled_dataset = dict(
     type=dataset_type,
     data_root=data_root,
     metainfo=dict(classes=classes),
-    ann_file='DWD/Daytime_Sunny/train.json',
-    data_prefix=dict(img='DWD/Daytime_Sunny/JPEGImages/'),
+    ann_file='sim10k/train.json',
+    data_prefix=dict(img='sim10k/JPEGImages/'),
     pipeline=unsup_pipeline)
 
 train_dataloader = dict(
@@ -164,8 +164,8 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         metainfo=dict(classes=classes),
-        ann_file='DWD/Daytime_Sunny/test.json',
-        data_prefix=dict(img='DWD/Daytime_Sunny/JPEGImages/'),
+        ann_file='sim10k/test.json',
+        data_prefix=dict(img='sim10k/JPEGImages/'),
         test_mode=True,
         filter_cfg=dict(filter_empty_gt=True),
         pipeline=test_pipeline))
@@ -174,7 +174,7 @@ test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'DWD/Daytime_Sunny/test.json',
+    ann_file=data_root + 'sim10k/test.json',
     metric='bbox',
     format_only=False)
 test_evaluator = val_evaluator
