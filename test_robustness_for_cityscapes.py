@@ -18,9 +18,9 @@ from tools.analysis_tools.robustness_eval import get_results
 def parse_args():
     parser = argparse.ArgumentParser(description='MMDet test detector')
     parser.add_argument('--config', help='test config file path',
-                        default='work_dirs_all/faster-rcnn_r101_fpn_city_source/faster-rcnn_r101_fpn_city_source.py')
+                        default='work_dirs_all/faster-rcnn_r101_fpn_city-c/faster-rcnn_r101_fpn_city-c.py')
     parser.add_argument('--checkpoint', help='checkpoint file',
-                        default='work_dirs_all/faster-rcnn_r101_fpn_city_source/iter_20000.pth')
+                        default='work_dirs_all/faster-rcnn_r101_fpn_city-c/iter_20000.pth')
     parser.add_argument(
         '--out',
         type=str,
@@ -30,7 +30,7 @@ def parse_args():
         '--corruptions',
         type=str,
         nargs='+',
-        default='noise',
+        default='benchmark',
         choices=[
             'all', 'benchmark', 'noise', 'blur', 'weather', 'digital',
             'holdout', 'None', 'gaussian_noise', 'shot_noise', 'impulse_noise',
@@ -77,7 +77,7 @@ def parse_args():
         '--final-prints-aggregate',
         type=str,
         choices=['all', 'benchmark'],
-        default=['all', 'benchmark'],
+        default='benchmark',
         help='aggregate all results or only those for benchmark corruptions')
     parser.add_argument(
         '--cfg-options',
@@ -188,13 +188,15 @@ def main():
             test_loader_cfg = copy.deepcopy(cfg.test_dataloader)
             # assign corruption and severity
             if corruption_severity > 0:
-                corruption_trans = dict(
-                    type='Corrupt',
-                    corruption=corruption,
-                    severity=corruption_severity)
-                # TODO: hard coded "1", we assume that the first step is
-                # loading images, which needs to be fixed in the future
-                test_loader_cfg.dataset.pipeline.insert(1, corruption_trans)
+                name = str(corruption) + str(corruption_severity)
+
+                test_loader_cfg.dataset.data_prefix.img = os.path.join('cityscapes/robustness', name)
+
+                # corruption_trans = dict(
+                #     type='Corrupt',
+                #     corruption=corruption,
+                #     severity=corruption_severity)
+                # test_loader_cfg.dataset.pipeline.insert(1, corruption_trans)
 
             test_loader = runner.build_dataloader(test_loader_cfg)
 
