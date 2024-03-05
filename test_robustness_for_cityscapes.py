@@ -18,9 +18,9 @@ from tools.analysis_tools.robustness_eval import get_results
 def parse_args():
     parser = argparse.ArgumentParser(description='MMDet test detector')
     parser.add_argument('--config', help='test config file path',
-                        default='work_dirs_all/faster-rcnn_r101_fpn_city-c/faster-rcnn_r101_fpn_city-c.py')
+                        default='work_dirs_all/faster-rcnn_r50_fpn_city-c/faster-rcnn_r50_fpn_city-c.py')
     parser.add_argument('--checkpoint', help='checkpoint file',
-                        default='work_dirs_all/faster-rcnn_r101_fpn_city-c/iter_20000.pth')
+                        default='work_dirs_all/faster-rcnn_r50_fpn_city-c/iter_20000.pth')
     parser.add_argument(
         '--out',
         type=str,
@@ -117,7 +117,7 @@ def main():
         cfg.work_dir = osp.join('./work_dirs',
                                 osp.splitext(osp.basename(args.config))[0])
     cfg.work_dir = osp.join('./work_dirs', os.path.join(osp.splitext(osp.basename(args.config))[0], 'robustness'))
-    cfg.model.backbone.init_cfg.type = None
+    # cfg.model.backbone.init_cfg.type = None
     cfg.test_dataloader.dataset.test_mode = True
 
     cfg.load_from = args.checkpoint
