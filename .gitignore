@@ -6,4 +6,5 @@
 /.idea/
 /work_logs
 /stable-diffusion-v1-5
-/robustness
+/result.pkl
+/result_results.pkl
