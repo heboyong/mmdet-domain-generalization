@@ -4,7 +4,8 @@
 /work_dirs_*/
 /*.zip
 /.idea/
-/work_logs
-/stable-diffusion-v1-5
+/work_logs/
+/stable-diffusion-v1-5/
 /result.pkl
 /result_results.pkl
+/output/

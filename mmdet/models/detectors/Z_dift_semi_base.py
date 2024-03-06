@@ -149,7 +149,7 @@ class SemiBaseDiftDetector(BaseDetector):
             multi_batch_inputs['sup'], multi_batch_data_samples['sup']))
 
         origin_pseudo_data_samples, batch_info = self.get_pseudo_instances_dift(
-            multi_batch_inputs['unsup_teacher'], multi_batch_data_samples['unsup_teacher'])
+            multi_batch_inputs['unsup_domain'], multi_batch_data_samples['unsup_domain'])
 
         multi_batch_data_samples['unsup_student'] = self.project_pseudo_instances(
             origin_pseudo_data_samples, multi_batch_data_samples['unsup_student'])

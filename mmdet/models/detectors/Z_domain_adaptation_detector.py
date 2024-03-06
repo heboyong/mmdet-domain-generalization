@@ -209,22 +209,8 @@ class DomainAdaptationDetector(BaseDetector):
             if self.local_iter < self.burn_up_iters:
                 losses.update(
                     **self.model.loss_by_gt_instances(multi_batch_inputs['sup'], multi_batch_data_samples['sup']))
-            elif self.burn_up_iters <= self.local_iter <= 20000:
+            elif self.burn_up_iters <= self.local_iter:
                 losses.update(**self.model.loss_dift(multi_batch_inputs, multi_batch_data_samples))
-            else:
-                losses.update(**self.model.loss(multi_batch_inputs, multi_batch_data_samples))
-
-            if self.use_uda and self.local_iter > self.da_start_iters:
-                source_backbone, source_neck = self.extract_feat(multi_batch_inputs['sup_weak'])
-                target_backbone, target_neck = self.extract_feat(multi_batch_inputs['unsup_teacher'])
-                domain_loss = self.domain_loss(source_neck, target_neck)
-                losses.update(**domain_loss)
-
-            if self.apply_domain_aug:
-                if not aug:
-                    self.domain_aug(multi_batch_inputs)
-                losses.update(**self.model.loss_by_gt_instances_domain(
-                    multi_batch_inputs['sup_domain'], multi_batch_data_samples['sup_domain']))
 
             self.local_iter += 1
         else:

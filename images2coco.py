@@ -1,0 +1,123 @@
+# Copyright (c) OpenMMLab. All rights reserved.
+import argparse
+import os
+
+from mmengine.fileio import dump, list_from_file
+from mmengine.utils import mkdir_or_exist, scandir, track_iter_progress
+from PIL import Image
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Convert images to coco format without annotations')
+    parser.add_argument('--img_path', help='The root path of images',
+                        default='/home/hby/project/mmdet-domain-generalization/data/VOC/VOC0712/diffusion_aug')
+    parser.add_argument(
+        '--classes', default=None, type=str, help='The text file name of storage class list')
+    parser.add_argument(
+        '--out',
+        type=str,
+        default='train_diffusion.json',
+        help='The output annotation json file name, The save dir is in the '
+             'same directory as img_path')
+    parser.add_argument(
+        '-e',
+        '--exclude-extensions',
+        type=str,
+        nargs='+',
+        help='The suffix of images to be excluded, such as "png" and "bmp"')
+    args = parser.parse_args()
+    return args
+
+
+def collect_image_infos(path, exclude_extensions=None):
+    img_infos = []
+
+    images_generator = scandir(path, recursive=True)
+    for image_path in track_iter_progress(list(images_generator)):
+        if exclude_extensions is None or (
+                exclude_extensions is not None
+                and not image_path.lower().endswith(exclude_extensions)):
+            image_path = os.path.join(path, image_path)
+            img_pillow = Image.open(image_path)
+            img_info = {
+                'filename': image_path.split('/')[-1],
+                'width': img_pillow.width,
+                'height': img_pillow.height,
+            }
+            img_infos.append(img_info)
+    return img_infos
+
+
+def cvt_to_coco_json(img_infos):
+    image_id = 0
+    coco = dict()
+    coco['images'] = []
+    coco['type'] = 'instance'
+    coco['categories'] = []
+    coco['annotations'] = []
+    image_set = set()
+
+    coco['categories'] = [{"supercategory": "none", "id": 0, "name": "aeroplane"},
+                           {"supercategory": "none", "id": 1, "name": "bicycle"},
+                           {"supercategory": "none", "id": 2, "name": "bird"},
+                           {"supercategory": "none", "id": 3, "name": "boat"},
+                           {"supercategory": "none", "id": 4, "name": "bottle"},
+                           {"supercategory": "none", "id": 5, "name": "bus"},
+                           {"supercategory": "none", "id": 6, "name": "car"},
+                           {"supercategory": "none", "id": 7, "name": "cat"},
+                           {"supercategory": "none", "id": 8, "name": "chair"},
+                           {"supercategory": "none", "id": 9, "name": "cow"},
+                           {"supercategory": "none", "id": 10, "name": "diningtable"},
+                           {"supercategory": "none", "id": 11, "name": "dog"},
+                           {"supercategory": "none", "id": 12, "name": "horse"},
+                           {"supercategory": "none", "id": 13, "name": "motorbike"},
+                           {"supercategory": "none", "id": 14, "name": "person"},
+                           {"supercategory": "none", "id": 15, "name": "pottedplant"},
+                           {"supercategory": "none", "id": 16, "name": "sheep"},
+                           {"supercategory": "none", "id": 17, "name": "sofa"},
+                           {"supercategory": "none", "id": 18, "name": "train"},
+                           {"supercategory": "none", "id": 19, "name": "tvmonitor"}]
+    # for category_id, name in enumerate(classes):
+    #     category_item = dict()
+    #     category_item['supercategory'] = str('none')
+    #     category_item['id'] = int(category_id)
+    #     category_item['name'] = str(name)
+    #     coco['categories'].append(category_item)
+
+    for img_dict in img_infos:
+        file_name = img_dict['filename']
+        assert file_name not in image_set
+        image_item = dict()
+        image_item['id'] = int(image_id)
+        image_item['file_name'] = str(file_name)
+        image_item['height'] = int(img_dict['height'])
+        image_item['width'] = int(img_dict['width'])
+        coco['images'].append(image_item)
+        image_set.add(file_name)
+
+        image_id += 1
+    return coco
+
+
+def main():
+    args = parse_args()
+    assert args.out.endswith(
+        'json'), 'The output file name must be json suffix'
+
+    # 1 load image list info
+    img_infos = collect_image_infos(args.img_path, args.exclude_extensions)
+
+    # 2 convert to coco format data
+    coco_info = cvt_to_coco_json(img_infos)
+
+    # 3 dump
+    save_dir = os.path.join(args.img_path, '..')
+    mkdir_or_exist(save_dir)
+    save_path = os.path.join(save_dir, args.out)
+    dump(coco_info, save_path)
+    print(f'save json file: {save_path}')
+
+
+if __name__ == '__main__':
+    main()
