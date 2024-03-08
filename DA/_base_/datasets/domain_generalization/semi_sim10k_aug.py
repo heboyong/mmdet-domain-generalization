@@ -27,8 +27,7 @@ geometric = [
 
 branch_field = ['sup_weak', 'sup_domain', 'sup_strong', 'unsup_weak']
 
-sup_aug_pipeline = [
-    dict(type='RandAugment', aug_space=color_space, aug_num=1),
+sup_weak_pipeline = [
     dict(type='FilterAnnotations', min_gt_bbox_wh=(1e-2, 1e-2)),
     # dict(type='RandomFlip', prob=0.5),
     dict(
