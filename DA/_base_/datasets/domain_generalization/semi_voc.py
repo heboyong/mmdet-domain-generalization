@@ -127,7 +127,7 @@ test_pipeline = [
                    'scale_factor'))
 ]
 
-batch_size = 8
+batch_size = 16
 num_workers = 8
 
 labeled_dataset = dict(
