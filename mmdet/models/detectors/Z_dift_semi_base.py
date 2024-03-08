@@ -145,17 +145,16 @@ class SemiBaseDiftDetector(BaseDetector):
             dict: A dictionary of loss components
         """
         losses = dict()
-        losses.update(**self.loss_by_gt_instances(
-            multi_batch_inputs['sup'], multi_batch_data_samples['sup']))
 
         origin_pseudo_data_samples, batch_info = self.get_pseudo_instances_dift(
-            multi_batch_inputs['unsup_teacher'], multi_batch_data_samples['unsup_teacher'])
+            multi_batch_inputs['unsup_weak'], multi_batch_data_samples['unsup_weak'])
 
-        multi_batch_data_samples['unsup_student'] = self.project_pseudo_instances(
-            origin_pseudo_data_samples, multi_batch_data_samples['unsup_student'])
+        multi_batch_data_samples['unsup_weak'] = self.project_pseudo_instances(
+            origin_pseudo_data_samples, multi_batch_data_samples['unsup_weak'])
 
-        losses.update(**self.loss_by_pseudo_instances_dift(multi_batch_inputs['unsup_student'],
-                                                           multi_batch_data_samples['unsup_student'], batch_info))
+        losses.update(**self.loss_by_pseudo_instances_dift(multi_batch_inputs['unsup_weak'],
+                                                           multi_batch_data_samples['unsup_weak'], batch_info))
+
         return losses
 
     def loss_by_gt_instances(self, batch_inputs: Tensor,
@@ -216,6 +215,25 @@ class SemiBaseDiftDetector(BaseDetector):
 
         losses = self.student.loss(batch_inputs, batch_data_samples)
         return rename_loss_dict('domain_', reweight_loss_dict(losses, 1.0))
+
+    def loss_by_gt_instances_strong(self, batch_inputs: Tensor,
+                                    batch_data_samples: SampleList) -> dict:
+        """Calculate losses from a batch of inputs and ground-truth data
+        samples.
+
+        Args:
+            batch_inputs (Tensor): Input images of shape (N, C, H, W).
+                These should usually be mean centered and std scaled.
+            batch_data_samples (List[:obj:`DetDataSample`]): The batch
+                data samples. It usually includes information such
+                as `gt_instance` or `gt_panoptic_seg` or `gt_sem_seg`.
+
+        Returns:
+            dict: A dictionary of loss components
+        """
+
+        losses = self.student.loss(batch_inputs, batch_data_samples)
+        return rename_loss_dict('strong_', reweight_loss_dict(losses, 1.0))
 
     def loss_by_pseudo_instances(self,
                                  batch_inputs: Tensor,
