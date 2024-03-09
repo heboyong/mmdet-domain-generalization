@@ -7,6 +7,7 @@ from mmengine.model import is_model_wrapper
 from mmengine.runner import Runner
 
 from mmdet.registry import HOOKS
+from mmengine.runner import load_checkpoint
 
 
 @HOOKS.register_module()
@@ -57,6 +58,12 @@ class AdaptiveTeacherHook(Hook):
 
         assert hasattr(model, 'teacher')
         assert hasattr(model, 'student')
+
+        # load student pretrained model
+        if model.semi_train_cfg.get('student_pretrained'):
+            load_checkpoint(model.student, model.semi_train_cfg.student_pretrained, map_location='cpu', strict=False)
+            model.student.cuda()
+
         # only do it at initial stage
         if runner.iter == 0:
             self.momentum_update(model, 1)

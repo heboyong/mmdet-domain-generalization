@@ -1,7 +1,7 @@
 _base_ = [
     '../../_base_/models/semi_faster_rcnn_r50+dift_fpn.py',
     '../../_base_/da_setting/semi_e2e_20k_0.1backbone.py',
-    '../../_base_/datasets/domain_generalization/semi_cityscapes_aug.py'
+    '../../_base_/datasets/domain_generalization/semi_cityscapes-c.py'
 ]
 
 detector = _base_.model
