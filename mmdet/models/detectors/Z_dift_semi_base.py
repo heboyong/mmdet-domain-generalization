@@ -51,6 +51,7 @@ class SemiBaseDiftDetector(BaseDetector):
 
         self.student = MODELS.build(detector.deepcopy())
         self.teacher = MODELS.build(detector.deepcopy())
+
         # Build dift model
         teacher_config = Config.fromfile(dift_model.config)
         self.dift_detector = MODELS.build(teacher_config['model'])
@@ -64,6 +65,11 @@ class SemiBaseDiftDetector(BaseDetector):
         self.semi_test_cfg = semi_test_cfg
         if self.semi_train_cfg.get('freeze_teacher', True) is True:
             self.freeze(self.teacher)
+
+        # for student model
+        if dift_model.get('student_model'):
+            load_checkpoint(self.student, dift_model.student_model, map_location='cpu', strict=False)
+            self.student.cuda()
 
     @staticmethod
     def freeze(model: nn.Module):

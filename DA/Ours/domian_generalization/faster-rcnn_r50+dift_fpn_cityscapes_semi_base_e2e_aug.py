@@ -13,8 +13,8 @@ detector.data_preprocessor = dict(
     pad_size_divisor=64)
 
 detector.detector.roi_head.bbox_head.num_classes = 8
-detector.dift_model.config = 'work_dirs_all/faster-rcnn_dift_fpn_cityscapes_source/faster-rcnn_dift_fpn_cityscapes_source.py'
-detector.dift_model.pretrained_model = 'work_dirs_all/faster-rcnn_dift_fpn_cityscapes_source/iter_20000.pth'
+detector.dift_model.config = 'work_dirs_all/faster-rcnn_dift_fpn_cityscapes-c/faster-rcnn_dift_fpn_cityscapes-c.py'
+detector.dift_model.pretrained_model = 'work_dirs_all/faster-rcnn_dift_fpn_cityscapes-c/iter_20000.pth'
 
 
 model = dict(
@@ -50,4 +50,3 @@ model = dict(
 )
 optim_wrapper = dict(clip_grad=dict(max_norm=35, norm_type=2))
 
-train_cfg = dict(val_interval=4000)

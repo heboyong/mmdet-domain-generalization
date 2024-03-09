@@ -97,7 +97,7 @@ sup_pipeline = [
 unsup_pipeline = [
     dict(type='LoadImageFromFile', backend_args=backend_args),
     dict(type='LoadEmptyAnnotations'),
-    dict(type='RandomResize', scale=[(2048, 800), (2048, 1024)], keep_ratio=True),
+    dict(type='RandomResize', scale=[(1024, 800), (1024, 1024)], keep_ratio=True),
     dict(type='RandomCrop', crop_type='absolute', crop_size=(1024, 1024),
          recompute_bbox=True, allow_negative_crop=True),
     dict(type='RandomFlip', prob=0.5),
