@@ -18,9 +18,9 @@ from tools.analysis_tools.robustness_eval import get_results
 def parse_args():
     parser = argparse.ArgumentParser(description='MMDet test detector')
     parser.add_argument('--config', help='test config file path',
-                        default='work_dirs_all/faster-rcnn_r50_fpn_city-c/faster-rcnn_r50_fpn_city-c.py')
+                        default='work_dirs/faster-rcnn_dift_fpn_cityscapes-c/faster-rcnn_dift_fpn_cityscapes-c.py')
     parser.add_argument('--checkpoint', help='checkpoint file',
-                        default='work_dirs_all/faster-rcnn_r50_fpn_city-c/iter_20000.pth')
+                        default='work_dirs/faster-rcnn_dift_fpn_cityscapes-c/iter_20000.pth')
     parser.add_argument(
         '--out',
         type=str,
@@ -227,18 +227,18 @@ def main():
         aggregate = args.final_prints_aggregate
 
         if cfg.dataset_type == 'VOCDataset':
-            get_results(
+            result = get_results(
                 eval_results_filename,
                 dataset='voc',
                 prints=prints,
                 aggregate=aggregate)
         else:
-            get_results(
+            result = get_results(
                 eval_results_filename,
                 dataset='coco',
                 prints=prints,
                 aggregate=aggregate)
-
+    runner.logger.info(result)
 
 if __name__ == '__main__':
     main()
