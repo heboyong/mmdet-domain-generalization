@@ -4,7 +4,7 @@ default_hooks = dict(
     logger=dict(type='LoggerHook', interval=50),
     param_scheduler=dict(type='ParamSchedulerHook'),
     checkpoint=dict(type='CheckpointHook', interval=2000, by_epoch=False,
-                    max_keep_ckpts=1, save_best=['teacher/coco/bbox_mAP_50', 'student/coco/bbox_mAP_50']),
+                    max_keep_ckpts=10, save_best=['teacher/coco/bbox_mAP_50', 'student/coco/bbox_mAP_50']),
     sampler_seed=dict(type='DistSamplerSeedHook'),
     visualization=dict(type='DetVisualizationHook'))
 env_cfg = dict(
