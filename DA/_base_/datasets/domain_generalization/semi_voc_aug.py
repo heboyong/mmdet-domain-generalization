@@ -29,7 +29,7 @@ geometric = [
     [dict(type='TranslateY')],
 ]
 
-branch_field = ['sup_weak', 'sup_domain', 'sup_strong', 'unsup_weak']
+branch_field = ['sup_weak', 'sup_domain', 'sup_strong', 'unsup_weak', 'unsup_strong']
 
 sup_weak_pipeline = [
     dict(type='FilterAnnotations', min_gt_bbox_wh=(1e-2, 1e-2)),
@@ -81,6 +81,22 @@ unsup_weak_pipeline = [
                    'homography_matrix')),
 ]
 
+unsup_strong_pipeline = [
+    dict(
+        type='RandomOrder',
+        transforms=[
+            dict(type='RandAugment', aug_space=color_space, aug_num=1),
+            dict(type='RandAugment', aug_space=geometric, aug_num=1),
+        ]),
+    dict(type='RandomErasing', n_patches=(1, 5), ratio=(0, 0.2)),
+    dict(type='FilterAnnotations', min_gt_bbox_wh=(1e-2, 1e-2)),
+    dict(
+        type='PackDetInputs',
+        meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
+                   'scale_factor', 'flip', 'flip_direction',
+                   'homography_matrix')),
+]
+
 sup_pipeline = [
     dict(type='LoadImageFromFile', backend_args=backend_args),
     dict(type='LoadAnnotations', with_bbox=True),
@@ -117,6 +133,7 @@ unsup_pipeline = [
         type='MultiBranch',
         branch_field=branch_field,
         unsup_weak=unsup_weak_pipeline,
+        unsup_strong=unsup_strong_pipeline
     )
 ]
 

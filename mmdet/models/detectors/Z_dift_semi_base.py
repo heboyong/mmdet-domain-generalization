@@ -153,8 +153,8 @@ class SemiBaseDiftDetector(BaseDetector):
         origin_pseudo_data_samples, batch_info = self.get_pseudo_instances_dift(
             multi_batch_inputs['unsup_weak'], multi_batch_data_samples['unsup_weak'])
 
-        multi_batch_data_samples['unsup_weak'] = self.project_pseudo_instances(
-            origin_pseudo_data_samples, multi_batch_data_samples['unsup_weak'])
+        multi_batch_data_samples['unsup_strong'] = self.project_pseudo_instances(
+            origin_pseudo_data_samples, multi_batch_data_samples['unsup_strong'])
 
         losses.update(**self.loss_by_pseudo_instances_dift(multi_batch_inputs['unsup_strong'],
                                                            multi_batch_data_samples['unsup_strong'], batch_info))
