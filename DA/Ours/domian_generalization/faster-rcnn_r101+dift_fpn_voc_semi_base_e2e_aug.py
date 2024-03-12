@@ -15,7 +15,7 @@ detector.data_preprocessor = dict(
 detector.detector.roi_head.bbox_head.num_classes = 20
 detector.dift_model.config = 'work_dirs_all/faster-rcnn_dift_fpn_voc_source/faster-rcnn_dift_fpn_voc_source.py'
 detector.dift_model.pretrained_model = 'work_dirs_all/faster-rcnn_dift_fpn_voc_source/iter_20000.pth'
-
+detector.semi_train_cfg.student_pretrained = 'work_dirs_all/faster-rcnn_r101_fpn_voc_source/iter_20000.pth'
 
 model = dict(
     _delete_=True,
