@@ -6,6 +6,22 @@ _base_ = [
 
 detector = _base_.model
 detector.roi_head.bbox_head.num_classes = 8
-load_from = 'https://download.openmmlab.com/mmdetection/v3.0/vitdet/vitdet_mask-rcnn_vit-b-mae_lsj-100e/vitdet_mask-rcnn_vit-b-mae_lsj-100e_20230328_153519-e15fe294.pth'
+train_cfg = dict(val_interval=4000)
 
-train_cfg = dict(val_interval=10000)
+optim_wrapper = dict(
+    type='AmpOptimWrapper',
+    constructor='LayerDecayOptimizerConstructor',
+    paramwise_cfg={
+        'decay_rate': 0.7,
+        'decay_type': 'layer_wise',
+        'num_layers': 12,
+    },
+    optimizer=dict(
+        _delete_=True,
+        type='AdamW',
+        lr=0.0001,
+        betas=(0.9, 0.999),
+        weight_decay=0.1,
+    ))
+
+custom_hooks = [dict(type='Fp16CompresssionHook')]

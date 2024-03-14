@@ -1,4 +1,9 @@
 # model settings
+
+custom_imports = dict(
+    imports=['mmpretrain.models'], allow_failed_imports=False)
+checkpoint_file = 'https://download.openmmlab.com/mmclassification/v0/convnext/convnext-base_in21k-pre-3rdparty_32xb128_in1k_20220124-eb2d6ada.pth'  # noqa
+
 model = dict(
     type='FasterRCNN',
     data_preprocessor=dict(
@@ -8,25 +13,18 @@ model = dict(
         bgr_to_rgb=True,
         pad_size_divisor=64),
     backbone=dict(
-        type='DIFT',
-        dift_config=
-        dict(projection_dim=[2048, 1024, 512, 256],
-             projection_dim_x4=256,
-             model_id="../stable-diffusion-v1-5",
-             diffusion_mode="inversion",
-             input_resolution=[512, 512],
-             prompt="",
-             negative_prompt="",
-             guidance_scale=-1,
-             scheduler_timesteps=[80, 60, 40, 20, 1],
-             save_timestep=[4, 3, 2, 1, 0],
-             num_timesteps=5,
-             idxs=[[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2], [3, 0], [3, 1],
-                   [3, 2]])
-    ),
+        type='mmpretrain.ConvNeXt',
+        arch='base',
+        out_indices=[0, 1, 2, 3],
+        drop_path_rate=0.6,
+        layer_scale_init_value=1.0,
+        gap_before_final_norm=False,
+        init_cfg=dict(
+            type='Pretrained', checkpoint=checkpoint_file,
+            prefix='backbone.')),
     neck=dict(
         type='FPN',
-        in_channels=[256, 512, 1024, 2048],
+        in_channels=[128, 256, 512, 1024],
         out_channels=256,
         num_outs=5),
     rpn_head=dict(

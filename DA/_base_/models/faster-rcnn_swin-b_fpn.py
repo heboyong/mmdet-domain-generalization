@@ -1,14 +1,5 @@
 # model settings
-
-custom_imports = dict(imports=['projects.ViTDet.vitdet'])
-
-backbone_norm_cfg = dict(type='LN', requires_grad=True)
-norm_cfg = dict(type='LN2d', requires_grad=True)
-image_size = (512, 512)
-batch_augments = [
-    dict(type='BatchFixedSizePad', size=image_size, pad_mask=True)
-]
-
+pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_base_patch4_window7_224.pth'
 model = dict(
     type='FasterRCNN',
     data_preprocessor=dict(
@@ -16,43 +7,31 @@ model = dict(
         mean=[123.675, 116.28, 103.53],
         std=[58.395, 57.12, 57.375],
         bgr_to_rgb=True,
-        pad_size_divisor=64,
-        batch_augments=batch_augments),
+        pad_size_divisor=64),
     backbone=dict(
-        type='ViT',
-        img_size=512,
-        patch_size=16,
-        embed_dim=768,
-        depth=12,
-        num_heads=12,
-        drop_path_rate=0.1,
-        window_size=14,
+        type='SwinTransformer',
+        embed_dims=128,
+        depths=[2, 2, 18, 2],
+        num_heads=[4, 8, 16, 32],
+        window_size=7,
         mlp_ratio=4,
         qkv_bias=True,
-        norm_cfg=backbone_norm_cfg,
-        window_block_indexes=[
-            0,
-            1,
-            3,
-            4,
-            6,
-            7,
-            9,
-            10,
-        ],
-        use_rel_pos=True,
-        init_cfg=dict(
-            type='Pretrained', checkpoint='https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_base.pth')),
+        qk_scale=None,
+        drop_rate=0.,
+        attn_drop_rate=0.,
+        drop_path_rate=0.3,
+        patch_norm=True,
+        out_indices=(0, 1, 2, 3),
+        with_cp=False,
+        convert_weights=True,
+        init_cfg=dict(type='Pretrained', checkpoint=pretrained)),
     neck=dict(
-        type='SimpleFPN',
-        backbone_channel=768,
-        in_channels=[192, 384, 768, 768],
+        type='FPN',
+        in_channels=[128, 256, 512, 1024],
         out_channels=256,
-        num_outs=5,
-        norm_cfg=norm_cfg),
+        num_outs=5),
     rpn_head=dict(
         type='RPNHead',
-        num_convs=2,
         in_channels=256,
         feat_channels=256,
         anchor_generator=dict(
@@ -76,7 +55,6 @@ model = dict(
             featmap_strides=[4, 8, 16, 32]),
         bbox_head=dict(
             type='Shared2FCBBoxHead',
-            norm_cfg=norm_cfg,
             in_channels=256,
             fc_out_channels=1024,
             roi_feat_size=7,

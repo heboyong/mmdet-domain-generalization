@@ -1,25 +1,27 @@
 _base_ = [
-    '../../_base_/models/faster-rcnn_swin-b_fpn.py',
+    '../../_base_/models/faster-rcnn_vit-b_fpn.py',
     '../../_base_/da_setting/da_20k_0.1backbone.py',
     '../../_base_/datasets/domain_generalization/dwd.py'
 ]
 
 detector = _base_.model
 detector.roi_head.bbox_head.num_classes = 8
-
 train_cfg = dict(val_interval=4000)
 
 optim_wrapper = dict(
-    type='OptimWrapper',
-    paramwise_cfg=dict(
-        custom_keys={
-            'absolute_pos_embed': dict(decay_mult=0.),
-            'relative_position_bias_table': dict(decay_mult=0.),
-            'norm': dict(decay_mult=0.)
-        }),
+    type='AmpOptimWrapper',
+    constructor='LayerDecayOptimizerConstructor',
+    paramwise_cfg={
+        'decay_rate': 0.7,
+        'decay_type': 'layer_wise',
+        'num_layers': 12,
+    },
     optimizer=dict(
         _delete_=True,
         type='AdamW',
         lr=0.0001,
         betas=(0.9, 0.999),
-        weight_decay=0.05))
+        weight_decay=0.1,
+    ))
+
+custom_hooks = [dict(type='Fp16CompresssionHook')]

@@ -42,7 +42,7 @@ model = dict(
         ],
         use_rel_pos=True,
         init_cfg=dict(
-            type='Pretrained', checkpoint='https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_base.pth')),
+            type='Pretrained', checkpoint='https://dl.fbaipublicfiles.com/dino/dino_vitbase16_pretrain/dino_vitbase16_pretrain.pth')),
     neck=dict(
         type='SimpleFPN',
         backbone_channel=768,
