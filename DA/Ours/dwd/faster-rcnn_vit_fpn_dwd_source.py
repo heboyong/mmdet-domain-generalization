@@ -6,7 +6,6 @@ _base_ = [
 
 detector = _base_.model
 detector.roi_head.bbox_head.num_classes = 8
-train_cfg = dict(val_interval=4000)
 
 optim_wrapper = dict(
     type='AmpOptimWrapper',
@@ -25,3 +24,5 @@ optim_wrapper = dict(
     ))
 
 custom_hooks = [dict(type='Fp16CompresssionHook')]
+
+train_cfg = dict(val_interval=4000)

@@ -7,8 +7,6 @@ _base_ = [
 detector = _base_.model
 detector.roi_head.bbox_head.num_classes = 8
 
-train_cfg = dict(val_interval=4000)
-
 optim_wrapper = dict(
     type='AmpOptimWrapper',
     constructor='LearningRateDecayOptimizerConstructor',
@@ -23,3 +21,5 @@ optim_wrapper = dict(
         lr=0.0002,
         betas=(0.9, 0.999),
         weight_decay=0.05))
+
+train_cfg = dict(val_interval=4000)
