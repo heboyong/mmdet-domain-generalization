@@ -25,4 +25,4 @@ optim_wrapper = dict(
 
 custom_hooks = [dict(type='Fp16CompresssionHook')]
 
-train_cfg = dict(val_interval=4000)
+train_cfg = dict(val_interval=10000)
