@@ -49,18 +49,21 @@ class SemiBaseDiftDetector(BaseDetector):
         super().__init__(
             data_preprocessor=data_preprocessor, init_cfg=init_cfg)
 
+
         self.student = MODELS.build(detector.deepcopy())
         self.teacher = MODELS.build(detector.deepcopy())
-
-        # Build dift model
         self.dift_detector = None
-        teacher_config = Config.fromfile(dift_model.config)
-        self.dift_detector = MODELS.build(teacher_config['model'])
-        load_checkpoint(self.dift_detector, dift_model.pretrained_model, map_location='cpu', strict=True)
-        self.dift_detector.cuda()
-        # In order to reforward teacher model,
-        # set requires_grad of teacher model to False
-        self.freeze(self.dift_detector)
+        if dift_model.config:
+            teacher_config = Config.fromfile(dift_model.config)
+            self.dift_detector = MODELS.build(teacher_config['model'])
+            if dift_model.pretrained_model:
+                load_checkpoint(self.dift_detector, dift_model.pretrained_model, map_location='cpu', strict=True)
+                self.dift_detector.cuda()
+                # In order to reforward teacher model,
+                # set requires_grad of teacher model to False
+                self.freeze(self.dift_detector)
+        if self.dift_detector is None:
+            self.dift_detector = self.student
 
         self.semi_train_cfg = semi_train_cfg
         self.semi_test_cfg = semi_test_cfg
