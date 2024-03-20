@@ -12,9 +12,10 @@ detector.data_preprocessor = dict(
     bgr_to_rgb=True,
     pad_size_divisor=64)
 
-detector.detector.roi_head.bbox_head.num_classes = 20
+detector.detector.roi_head.bbox_head.num_classes = 8
 detector.dift_model.config = 'work_dirs_all/faster-rcnn_dift_fpn_dwd_source/faster-rcnn_dift_fpn_dwd_source.py'
 detector.dift_model.pretrained_model = 'work_dirs_all/faster-rcnn_dift_fpn_dwd_source/iter_20000.pth'
+detector.semi_train_cfg.student_pretrained = 'work_dirs_all/faster-rcnn_swin_fpn_dwd_source/iter_20000.pth'
 
 model = dict(
     _delete_=True,
