@@ -2,6 +2,7 @@
 import argparse
 import copy
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import os.path as osp
 
 from mmengine.config import Config, DictAction
@@ -20,7 +21,7 @@ def parse_args():
     parser.add_argument('--config', help='test config file path',
                         default='work_dirs/faster-rcnn_r50+dift_fpn_cityscapes-c_semi_base_e2e_aug/faster-rcnn_r50+dift_fpn_cityscapes-c_semi_base_e2e_aug.py')
     parser.add_argument('--checkpoint', help='checkpoint file',
-                        default='work_dirs/faster-rcnn_r50+dift_fpn_cityscapes-c_semi_base_e2e_aug/iter_20000.pth')
+                        default='work_dirs/faster-rcnn_r50+dift_fpn_cityscapes-c_semi_base_e2e_aug/iter_10000.pth')
     parser.add_argument(
         '--out',
         type=str,
