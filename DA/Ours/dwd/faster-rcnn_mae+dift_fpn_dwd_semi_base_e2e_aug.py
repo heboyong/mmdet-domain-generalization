@@ -63,3 +63,5 @@ optim_wrapper = dict(
         betas=(0.9, 0.999),
         weight_decay=0.1,
     ))
+
+train_cfg = dict(val_interval=4000)
