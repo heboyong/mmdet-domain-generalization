@@ -1,5 +1,5 @@
 _base_ = [
-    './faster-rcnn_r50_fpn.py',
+    './faster-rcnn_r18_fpn.py',
 
 ]
 

@@ -73,20 +73,28 @@ def main():
             'DA/_base_/datasets/domain_generalization/test_dwd_daytime_foggy.py',
             'DA/_base_/datasets/domain_generalization/test_dwd_dusk_rainy.py',
             'DA/_base_/datasets/domain_generalization/test_dwd_night_rainy.py',
-            'DA/_base_/datasets/domain_generalization/test_dwd_night_sunny.py']
+            'DA/_base_/datasets/domain_generalization/test_dwd_night_sunny.py'
+        ]
     elif 'city' in args.config:
         config_list = [
+            'DA/_base_/datasets/domain_generalization/test_cityscapes.py',
             'DA/_base_/datasets/domain_generalization/test_bdd100k.py',
-            'DA/_base_/datasets/domain_generalization/test_foggy_cityscapes.py']
+            'DA/_base_/datasets/domain_generalization/test_foggy_cityscapes.py',
+            'DA/_base_/datasets/domain_generalization/test_rainy_cityscapes.py'
+        ]
     elif 'sim10k' in args.config:
         config_list = [
+            'DA/_base_/datasets/domain_generalization/test_sim10k.py',
             'DA/_base_/datasets/domain_generalization/test_cityscapes_for_sim10k.py',
-            'DA/_base_/datasets/domain_generalization/test_bdd100k_for_sim10k.py']
+            'DA/_base_/datasets/domain_generalization/test_bdd100k_for_sim10k.py'
+        ]
     elif 'voc' in args.config:
         config_list = [
-            'DA/_base_/datasets/domain_generalization/test_clipart.py',
-            'DA/_base_/datasets/domain_generalization/test_comic.py',
-            'DA/_base_/datasets/domain_generalization/test_watercolor.py']
+            'DA/_base_/datasets/domain_generalization/test_voc.py',
+            # 'DA/_base_/datasets/domain_generalization/test_clipart.py',
+            # 'DA/_base_/datasets/domain_generalization/test_comic.py',
+            # 'DA/_base_/datasets/domain_generalization/test_watercolor.py'
+        ]
 
     for test_config in config_list:
         print("****************************************************************************************" * 10)
