@@ -1,7 +1,7 @@
 _base_ = [
     '../../_base_/models/semi_faster_rcnn_r101+dift_fpn.py',
     '../../_base_/da_setting/semi_e2e_20k_0.1backbone.py',
-    '../../_base_/datasets/domain_generalization/semi_sim10k_aug.py'
+    '../../_base_/datasets/domain_generalization/semi_cityscapes_out.py'
 ]
 
 detector = _base_.model
@@ -12,10 +12,10 @@ detector.data_preprocessor = dict(
     bgr_to_rgb=True,
     pad_size_divisor=64)
 
-detector.detector.roi_head.bbox_head.num_classes = 1
-detector.dift_model.config = 'work_dirs_all/sim10k/faster-rcnn_dift_fpn_sim10k_source/faster-rcnn_dift_fpn_sim10k_source.py'
-detector.dift_model.pretrained_model = 'work_dirs_all/sim10k/faster-rcnn_dift_fpn_sim10k_source/iter_20000.pth'
-detector.semi_train_cfg.student_pretrained = 'work_dirs_all/sim10k/faster-rcnn_r101_fpn_sim10k_source/iter_20000.pth'
+detector.detector.roi_head.bbox_head.num_classes = 8
+detector.dift_model.config = 'work_dirs_all/cityscapes/faster-rcnn_dift_fpn_cityscapes_source/faster-rcnn_dift_fpn_cityscapes_source.py'
+detector.dift_model.pretrained_model = 'work_dirs_all/cityscapes/faster-rcnn_dift_fpn_cityscapes_source/iter_20000.pth'
+detector.semi_train_cfg.student_pretrained = 'work_dirs_all/cityscapes/faster-rcnn_r101_fpn_cityscapes_source/iter_20000.pth'
 
 model = dict(
     _delete_=True,

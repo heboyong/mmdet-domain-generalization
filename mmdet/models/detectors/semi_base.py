@@ -75,19 +75,17 @@ class SemiBaseDetector(BaseDetector):
             dict: A dictionary of loss components
         """
         losses = dict()
-        losses.update(**self.loss_by_gt_instances(
-            multi_batch_inputs['sup'], multi_batch_data_samples['sup']))
 
         origin_pseudo_data_samples, batch_info = self.get_pseudo_instances(
-            multi_batch_inputs['unsup_teacher'],
-            multi_batch_data_samples['unsup_teacher'])
+            multi_batch_inputs['unsup_weak'],
+            multi_batch_data_samples['unsup_weak'])
         multi_batch_data_samples[
-            'unsup_student'] = self.project_pseudo_instances(
+            'unsup_weak'] = self.project_pseudo_instances(
             origin_pseudo_data_samples,
-            multi_batch_data_samples['unsup_student'])
+            multi_batch_data_samples['unsup_strong'])
         losses.update(**self.loss_by_pseudo_instances(
-            multi_batch_inputs['unsup_student'],
-            multi_batch_data_samples['unsup_student'], batch_info))
+            multi_batch_inputs['unsup_strong'],
+            multi_batch_data_samples['unsup_strong'], batch_info))
         return losses
 
     def loss_domain_adaptive(self, multi_batch_inputs: Dict[str, Tensor],

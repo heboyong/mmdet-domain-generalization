@@ -19,6 +19,7 @@ model = dict(
         type='MultiBranchDataPreprocessor',
         data_preprocessor=detector.data_preprocessor),
     semi_train_cfg=dict(
+        student_pretrained=None,
         freeze_teacher=True,
         sup_weight=1.0,
         unsup_weight=1.0,
