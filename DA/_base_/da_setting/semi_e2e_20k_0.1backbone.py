@@ -26,7 +26,7 @@ resume = False
 # 如果burn_up_iters>max_iters, 则模型只进行源域训练
 
 burn_up_iters = 0
-da_start_iters = 8000
+da_start_iters = 0
 train_cfg = dict(type='IterBasedTrainLoop', max_iters=20000, val_interval=2000)
 val_cfg = dict(type='TeacherStudentValLoop')
 test_cfg = dict(type='TestLoop')
