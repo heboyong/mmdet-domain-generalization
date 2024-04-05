@@ -176,9 +176,6 @@ class DomainAdaptationDetector(BaseDetector):
             losses.update(
                 **self.model.loss_by_gt_instances_strong(multi_batch_inputs['sup_strong'],
                                                          multi_batch_data_samples['sup_strong']))
-            losses.update(
-                **self.model.loss_by_gt_instances_domain(multi_batch_inputs['sup_domain'],
-                                                         multi_batch_data_samples['sup_domain']))
             if self.local_iter > self.burn_up_iters:
                 losses.update(**self.model.loss_dift(multi_batch_inputs, multi_batch_data_samples))
             self.local_iter += 1
