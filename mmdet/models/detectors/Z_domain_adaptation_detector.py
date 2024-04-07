@@ -173,9 +173,10 @@ class DomainAdaptationDetector(BaseDetector):
             self.local_iter += 1
 
         elif self.train_cfg.detector_cfg.get('type') in ['SemiBaseDift']:
-            losses.update(
-                **self.model.loss_by_gt_instances_strong(multi_batch_inputs['sup_strong'],
-                                                         multi_batch_data_samples['sup_strong']))
+            losses.update(**self.model.loss_by_gt_instances_strong(multi_batch_inputs['sup_strong'],
+                                                                   multi_batch_data_samples['sup_strong']))
+            losses.update(**self.model.loss_by_gt_instances_strong(multi_batch_inputs['sup_weak'],
+                                                                   multi_batch_data_samples['sup_weak']))
             if self.local_iter > self.burn_up_iters:
                 losses.update(**self.model.loss_dift(multi_batch_inputs, multi_batch_data_samples))
             self.local_iter += 1
