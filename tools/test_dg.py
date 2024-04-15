@@ -91,9 +91,9 @@ def main():
     elif 'voc' in args.config:
         config_list = [
             'DA/_base_/datasets/domain_generalization/test_voc.py',
-            # 'DA/_base_/datasets/domain_generalization/test_clipart.py',
-            # 'DA/_base_/datasets/domain_generalization/test_comic.py',
-            # 'DA/_base_/datasets/domain_generalization/test_watercolor.py'
+            'DA/_base_/datasets/domain_generalization/test_clipart.py',
+            'DA/_base_/datasets/domain_generalization/test_comic.py',
+            'DA/_base_/datasets/domain_generalization/test_watercolor.py'
         ]
 
     for test_config in config_list:
