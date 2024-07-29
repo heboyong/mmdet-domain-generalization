@@ -22,7 +22,7 @@ log_level = 'INFO'
 load_from = None
 resume = False
 da_start_iters = 8000
-train_cfg = dict(type='IterBasedTrainLoop', max_iters=20000, val_interval=2000)
+train_cfg = dict(type='IterBasedTrainLoop', max_iters=20000, val_interval=100)
 val_cfg = dict(type='ValLoop')
 test_cfg = dict(type='TestLoop')
 param_scheduler = [
@@ -38,9 +38,9 @@ param_scheduler = [
 optim_wrapper = dict(
     type='OptimWrapper',
     optimizer=dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001),
-    paramwise_cfg=dict(
-        custom_keys=dict(backbone=dict(lr_mult=0.1, decay_mult=1.0)))
+    # paramwise_cfg=dict(
+    #     custom_keys=dict(backbone=dict(lr_mult=0.1, decay_mult=1.0)))
 )
 launcher = 'none'
-auto_scale_lr = dict(enable=True, base_batch_size=16)
+auto_scale_lr = dict(enable=False, base_batch_size=16)
 find_unused_parameters = True

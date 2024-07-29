@@ -35,6 +35,7 @@ class DIFT(BaseModule):
             self.dift_model = HyperFeatureEncoder(dift_config=self.dift_config)
 
     def forward(self, x):
+        x = self.imagenet_to_stable_diffusion(x)
         x = self.dift_model(x.to(dtype=torch.float16))
         return x
 
@@ -45,3 +46,28 @@ class DIFT(BaseModule):
         """Convert the model into training mode while keep normalization layer
         freezed."""
         pass
+
+    def imagenet_to_stable_diffusion(self, tensor):
+        """
+        将 ImageNet 格式的张量转换为 Stable Diffusion 格式。
+
+        参数:
+        tensor (torch.Tensor): 形状为 (N, C, H, W)，已按照 ImageNet 格式标准化。
+
+        返回:
+        torch.Tensor: 形状为 (N, C, H, W)，标准化到 [-1, 1] 范围。
+        """
+        # ImageNet 的均值和标准差
+        mean = torch.tensor([123.675, 116.28, 103.53]).view(1, 3, 1, 1).to(tensor.device)
+        std = torch.tensor([58.395, 57.12, 57.375]).view(1, 3, 1, 1).to(tensor.device)
+
+        # 逆标准化：将张量从 ImageNet 格式恢复到 [0, 255] 范围
+        tensor = tensor * std + mean
+
+        # 转换到 [0, 1] 范围
+        tensor = tensor / 255.0
+
+        # 转换到 [-1, 1] 范围
+        tensor = tensor * 2.0 - 1.0
+
+        return tensor

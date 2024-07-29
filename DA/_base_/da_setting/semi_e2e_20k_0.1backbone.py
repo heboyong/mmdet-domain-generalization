@@ -25,7 +25,7 @@ resume = False
 # 如果burn_up_iters<max_iters, 则模型在指定iter进入半监督，源域和目标域一起进行训练，teacher模型进行EMA参数更新
 # 如果burn_up_iters>max_iters, 则模型只进行源域训练
 
-burn_up_iters = 0
+burn_up_iters = 12000
 da_start_iters = 0
 train_cfg = dict(type='IterBasedTrainLoop', max_iters=20000, val_interval=2000)
 val_cfg = dict(type='TeacherStudentValLoop')
@@ -44,7 +44,8 @@ optim_wrapper = dict(
     type='OptimWrapper',
     optimizer=dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001),
     paramwise_cfg=dict(
-        custom_keys=dict(backbone=dict(lr_mult=0.1, decay_mult=1.0))))
+        custom_keys=dict(backbone=dict(lr_mult=0.1, decay_mult=1.0)))
+)
 launcher = 'none'
 auto_scale_lr = dict(enable=True, base_batch_size=16)
 custom_hooks = [dict(type='AdaptiveTeacherHook', burn_up_iters=burn_up_iters)]

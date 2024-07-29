@@ -1,2 +1,5 @@
+#!/bin/sh
+
 bash tools/dist_train.sh \
-DA/Ours/domian_generalization/faster-rcnn_r50+dift_fpn_cityscapes-c_semi_base_e2e_aug.py 2
+DA/Ours/dwd/faster-rcnn_dift_fpn_dwd_source.py 8
+

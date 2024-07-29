@@ -2,22 +2,22 @@
 import argparse
 import os
 
-from mmengine.fileio import dump, list_from_file
-from mmengine.utils import mkdir_or_exist, scandir, track_iter_progress
 from PIL import Image
+from mmengine.fileio import dump
+from mmengine.utils import mkdir_or_exist, scandir, track_iter_progress
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Convert images to coco format without annotations')
     parser.add_argument('--img_path', help='The root path of images',
-                        default='/home/hby/project/mmdet-domain-generalization/data/VOC/VOC0712/diffusion_aug')
+                        default='/home/kemove/disk/data/det/aug/cityscapes/aug')
     parser.add_argument(
         '--classes', default=None, type=str, help='The text file name of storage class list')
     parser.add_argument(
         '--out',
         type=str,
-        default='train_diffusion.json',
+        default='train_aug.json',
         help='The output annotation json file name, The save dir is in the '
              'same directory as img_path')
     parser.add_argument(
@@ -58,26 +58,48 @@ def cvt_to_coco_json(img_infos):
     coco['annotations'] = []
     image_set = set()
 
-    coco['categories'] = [{"supercategory": "none", "id": 0, "name": "aeroplane"},
-                           {"supercategory": "none", "id": 1, "name": "bicycle"},
-                           {"supercategory": "none", "id": 2, "name": "bird"},
-                           {"supercategory": "none", "id": 3, "name": "boat"},
-                           {"supercategory": "none", "id": 4, "name": "bottle"},
-                           {"supercategory": "none", "id": 5, "name": "bus"},
-                           {"supercategory": "none", "id": 6, "name": "car"},
-                           {"supercategory": "none", "id": 7, "name": "cat"},
-                           {"supercategory": "none", "id": 8, "name": "chair"},
-                           {"supercategory": "none", "id": 9, "name": "cow"},
-                           {"supercategory": "none", "id": 10, "name": "diningtable"},
-                           {"supercategory": "none", "id": 11, "name": "dog"},
-                           {"supercategory": "none", "id": 12, "name": "horse"},
-                           {"supercategory": "none", "id": 13, "name": "motorbike"},
-                           {"supercategory": "none", "id": 14, "name": "person"},
-                           {"supercategory": "none", "id": 15, "name": "pottedplant"},
-                           {"supercategory": "none", "id": 16, "name": "sheep"},
-                           {"supercategory": "none", "id": 17, "name": "sofa"},
-                           {"supercategory": "none", "id": 18, "name": "train"},
-                           {"supercategory": "none", "id": 19, "name": "tvmonitor"}]
+    coco['categories'] = [
+        {
+            "supercategory": "none",
+            "id": 0,
+            "name": "bicycle"
+        },
+        {
+            "supercategory": "none",
+            "id": 1,
+            "name": "bus"
+        },
+        {
+            "supercategory": "none",
+            "id": 2,
+            "name": "car"
+        },
+        {
+            "supercategory": "none",
+            "id": 3,
+            "name": "motorcycle"
+        },
+        {
+            "supercategory": "none",
+            "id": 4,
+            "name": "person"
+        },
+        {
+            "supercategory": "none",
+            "id": 5,
+            "name": "rider"
+        },
+        {
+            "supercategory": "none",
+            "id": 6,
+            "name": "train"
+        },
+        {
+            "supercategory": "none",
+            "id": 7,
+            "name": "truck"
+        }
+    ]
     # for category_id, name in enumerate(classes):
     #     category_item = dict()
     #     category_item['supercategory'] = str('none')

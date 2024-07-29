@@ -17,7 +17,7 @@ test_pipeline = [
 ]
 
 val_dataloader = dict(
-    batch_size=1,
+    batch_size=2,
     num_workers=8,
     persistent_workers=True,
     drop_last=False,

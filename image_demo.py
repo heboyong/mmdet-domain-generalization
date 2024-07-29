@@ -68,16 +68,12 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument(
         '--inputs', type=str, help='Input image file or folder path.',
-        default='/home/hby/project/stable-diffusion-v1-5/diffusion_aug/')
+        default='diffusion_aug_cityscapes/')
     parser.add_argument(
         '--model',
         type=str,
-        default='work_dirs_all/faster-rcnn_dift_fpn_dwd_source/faster-rcnn_dift_fpn_dwd_source.py',
-        help='Config or checkpoint .pth file or the model name '
-             'and alias defined in metafile. The model configuration '
-             'file will try to read from .pth if the parameter is '
-             'a .pth weights file.')
-    parser.add_argument('--weights', default='work_dirs_all/faster-rcnn_dift_fpn_dwd_source/iter_20000.pth',
+        default='work_dirs_all/faster-rcnn_r101_fpn_cityscapes_source/faster-rcnn_r101_fpn_cityscapes_source.py', )
+    parser.add_argument('--weights', default='work_dirs_all/faster-rcnn_r101_fpn_cityscapes_source/iter_20000.pth',
                         help='Checkpoint file')
     parser.add_argument(
         '--out-dir',

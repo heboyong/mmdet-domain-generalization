@@ -1,6 +1,6 @@
+import concurrent.futures
 import os
 import zipfile
-import concurrent.futures
 
 
 def compress_folders(directory):
@@ -13,7 +13,7 @@ def compress_folders(directory):
             if not os.path.exists(zip_file):
                 folders_to_compress.append(folder_path)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=15) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
         executor.map(compress_folder, folders_to_compress)
 
 
@@ -27,5 +27,9 @@ def compress_folder(folder_path):
 
 
 # 指定要压缩的目录
-directory = 'data/cityscapes/robustness'
-compress_folders(directory)
+root = 'work_dirs_all'
+
+for dir in os.listdir(root):
+    path = os.path.join(root, dir)
+    print(path)
+    compress_folders(path)
