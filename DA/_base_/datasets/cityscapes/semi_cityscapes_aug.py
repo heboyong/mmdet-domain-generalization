@@ -55,24 +55,6 @@ sup_strong_pipeline = [
                    'homography_matrix')),
 ]
 
-sup_domain_pipeline = [
-    dict(
-        type='RandomOrder',
-        transforms=[
-            dict(type='RandAugment', aug_space=color_space, aug_num=1),
-            dict(type='RandAugment', aug_space=geometric, aug_num=1),
-        ]),
-    dict(type='RandomErasing', n_patches=(1, 5), ratio=(0, 0.2)),
-    dict(type='AlbuDomainAdaption', domain_adaption_type='ALL',
-         target_dir='data/cityscapes/JPEGImages', p=0.5),
-    dict(type='FilterAnnotations', min_gt_bbox_wh=(1e-2, 1e-2)),
-    dict(
-        type='PackDetInputs',
-        meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
-                   'scale_factor', 'flip', 'flip_direction',
-                   'homography_matrix')),
-]
-
 unsup_weak_pipeline = [
     dict(
         type='PackDetInputs',

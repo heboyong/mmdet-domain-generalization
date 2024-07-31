@@ -53,6 +53,8 @@ sup_strong_pipeline = [
 ]
 
 sup_domain_pipeline = [
+    dict(type='AlbuDomainAdaption', domain_adaption_type='ALL',
+         target_dir='data/DWD/Daytime_Sunny/JPEGImages', p=1.0),
     dict(type='FilterAnnotations', min_gt_bbox_wh=(1e-2, 1e-2)),
     dict(
         type='PackDetInputs',

@@ -25,29 +25,15 @@ model = dict(
         type='MultiBranchDataPreprocessor',
         data_preprocessor=detector.data_preprocessor),
     train_cfg=dict(
-        detector_cfg=dict(type='SemiBaseDift', burn_up_iters=_base_.burn_up_iters),  # []
-        # 训练模式选择，从0开始
-        da_cfg=dict(
-            use_uda=False,
-            use_uncertainty=False,
-            da_start_iters=_base_.da_start_iters,
-            input_mode=[
-                'backbone[-1]',  # backbone最后一层
-                'neck[-1]',  # neck最后一层
-                'neck_all',  # 所有neck共用一个域分类器
-                'neck_cat',  # neck concat维度
-            ],
-            input_select=1,
-            daloss_weight=1.0
+        detector_cfg=dict(type='SemiBaseDift', burn_up_iters=_base_.burn_up_iters),
+        feature_loss_cfg=dict(
+            enable_feature_loss=True,
+            feature_loss_type='l1',
+            # ['domain_classifier','mutual_information_maximization','l1','mse','kl']
+            feature_loss_weight=1.0
         ),
-        domain_aug_cfg=dict(
-            apply_domain_aug=False,
-            apply_teacher_aug=False,
-            adaptive_threshold=False,
-            domain_aug_methods=['PDA']
-        )
     )
 )
-optim_wrapper = dict(clip_grad=dict(max_norm=35, norm_type=2))
 
+optim_wrapper = dict(clip_grad=dict(max_norm=35, norm_type=2))
 train_cfg = dict(val_interval=4000)

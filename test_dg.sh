@@ -1,19 +1,12 @@
 bash tools/dist_test_dg.sh  \
-DA/Ours/cityscapes/faster-rcnn_dift_fpn_cityscapes_source.py \
-work_dirs/faster-rcnn_dift_fpn_cityscapes_source/iter_20000.pth \
+work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu.pyz \
+work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e/iter_20000.pth \
 8
 
 bash tools/dist_test_dg.sh  \
-DA/Ours/sim10k/faster-rcnn_dift_fpn_sim10k_source.py \
-work_dirs/faster-rcnn_dift_fpn_sim10k_source/iter_20000.pth \
+work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu.py \
+work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu/iter_20000.pth \
 8
-
-bash tools/dist_test_dg.sh  \
-DA/Ours/voc/faster-rcnn_dift_fpn_voc_source.py \
-work_dirs/faster-rcnn_dift_fpn_voc_source/iter_20000.pth \
-8
-
-
 
 #Folder="work_dirs"
 #for file_name in ${Folder}/*

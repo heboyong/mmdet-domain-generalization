@@ -1,7 +1,7 @@
 _base_ = [
     '../../_base_/models/semi_faster_rcnn_r101+dift_fpn.py',
     '../../_base_/da_setting/semi_e2e_20k_0.1backbone.py',
-    '../../_base_/datasets/dwd/semi_dwd_aug.py'
+    '../../_base_/datasets/dwd/semi_dwd_albu.py'
 ]
 
 detector = _base_.model
@@ -36,5 +36,7 @@ model = dict(
 )
 
 optim_wrapper = dict(clip_grad=dict(max_norm=35, norm_type=2))
+
+custom_hooks = [dict(type='AdaptiveTeacherHook', burn_up_iters=_base_.burn_up_iters, momentum=0.0004)]
 
 train_cfg = dict(val_interval=4000)

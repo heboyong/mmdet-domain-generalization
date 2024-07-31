@@ -1,7 +1,7 @@
 _base_ = [
     '../../_base_/models/semi_faster_rcnn_r101+dift_fpn.py',
     '../../_base_/da_setting/semi_e2e_20k_0.1backbone.py',
-    '../../_base_/datasets/dwd/semi_dwd_aug.py'
+    '../../_base_/datasets/dwd/semi_dwd_albu.py'
 ]
 
 detector = _base_.model
@@ -17,6 +17,7 @@ detector.dift_model.config = 'DA/Ours/dwd/faster-rcnn_dift_fpn_dwd_source.py'
 detector.dift_model.pretrained_model = 'work_dirs_dift/faster-rcnn_dift_fpn_dwd_source/iter_20000.pth'
 detector.semi_train_cfg.student_pretrained = 'work_dirs_all/dwd/faster-rcnn_r101_fpn_dwd_source/iter_20000.pth'
 
+detector.detector.backbone.frozen_stages = -1
 model = dict(
     _delete_=True,
     type='DomainAdaptationDetector',

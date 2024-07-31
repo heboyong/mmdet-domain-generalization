@@ -223,6 +223,25 @@ class SemiBaseDiftDetector(BaseDetector):
         losses = self.student.loss(batch_inputs, batch_data_samples)
         return rename_loss_dict('domain_', reweight_loss_dict(losses, 1.0))
 
+    def loss_by_gt_instances_weak(self, batch_inputs: Tensor,
+                                    batch_data_samples: SampleList) -> dict:
+        """Calculate losses from a batch of inputs and ground-truth data
+        samples.
+
+        Args:
+            batch_inputs (Tensor): Input images of shape (N, C, H, W).
+                These should usually be mean centered and std scaled.
+            batch_data_samples (List[:obj:`DetDataSample`]): The batch
+                data samples. It usually includes information such
+                as `gt_instance` or `gt_panoptic_seg` or `gt_sem_seg`.
+
+        Returns:
+            dict: A dictionary of loss components
+        """
+
+        losses = self.student.loss(batch_inputs, batch_data_samples)
+        return rename_loss_dict('weak_', reweight_loss_dict(losses, 1.0))
+
     def loss_by_gt_instances_strong(self, batch_inputs: Tensor,
                                     batch_data_samples: SampleList) -> dict:
         """Calculate losses from a batch of inputs and ground-truth data
