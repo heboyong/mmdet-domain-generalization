@@ -33,7 +33,7 @@ def calculate_losses(pred, target, loss_types):
     if "kl" in loss_types:
         pred_log_softmax = F.log_softmax(pred, dim=1)
         target_softmax = F.softmax(target, dim=1)
-        kl_div_loss = F.kl_div(pred_log_softmax, target_softmax, reduction='none')
+        kl_div_loss = F.kl_div(pred_log_softmax, target_softmax, reduction='none')*100
         losses.append(kl_div_loss)
     if losses:
         total_loss = sum(losses)
@@ -58,7 +58,6 @@ class KDLoss(nn.Module):
                 target,
                 reduction_override=None) -> torch.Tensor:
         assert reduction_override in (None, 'none', 'mean', 'sum')
-        losses = dict()
         reduction = reduction_override if reduction_override else self.reduction
         total_loss = calculate_losses(pred, target, self.loss_types)
         if reduction == 'mean':

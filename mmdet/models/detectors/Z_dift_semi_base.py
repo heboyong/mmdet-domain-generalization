@@ -17,6 +17,7 @@ from pathlib import Path
 from mmengine.config import Config
 from mmengine.runner import load_checkpoint
 
+
 @MODELS.register_module()
 class SemiBaseDiftDetector(BaseDetector):
     """Base class for semi-supervised detectors.
@@ -49,7 +50,6 @@ class SemiBaseDiftDetector(BaseDetector):
         super().__init__(
             data_preprocessor=data_preprocessor, init_cfg=init_cfg)
 
-
         self.student = MODELS.build(detector.deepcopy())
         self.teacher = MODELS.build(detector.deepcopy())
         self.dift_detector = None
@@ -69,8 +69,6 @@ class SemiBaseDiftDetector(BaseDetector):
         self.semi_test_cfg = semi_test_cfg
         if self.semi_train_cfg.get('freeze_teacher', True) is True:
             self.freeze(self.teacher)
-
-
 
     @staticmethod
     def freeze(model: nn.Module):
@@ -138,7 +136,7 @@ class SemiBaseDiftDetector(BaseDetector):
         return losses
 
     def loss_dift(self, multi_batch_inputs: Dict[str, Tensor],
-                  multi_batch_data_samples: Dict[str, SampleList]) -> dict:
+                  multi_batch_data_samples: Dict[str, SampleList]) -> Any:
         """Calculate losses from multi-branch inputs and data samples.
 
         Args:
@@ -153,16 +151,18 @@ class SemiBaseDiftDetector(BaseDetector):
         """
         losses = dict()
 
-        origin_pseudo_data_samples, batch_info = self.get_pseudo_instances_dift(
+        origin_pseudo_data_samples, batch_info, dift_fpn = self.get_pseudo_instances_dift(
             multi_batch_inputs['unsup_weak'], multi_batch_data_samples['unsup_weak'])
 
         multi_batch_data_samples['unsup_strong'] = self.project_pseudo_instances(
             origin_pseudo_data_samples, multi_batch_data_samples['unsup_strong'])
 
-        losses.update(**self.loss_by_pseudo_instances_dift(multi_batch_inputs['unsup_strong'],
-                                                           multi_batch_data_samples['unsup_strong'], batch_info))
+        unsup_loss, student_fpn = self.loss_by_pseudo_instances_dift(multi_batch_inputs['unsup_strong'],
+                                                                     multi_batch_data_samples['unsup_strong'],
+                                                                     batch_info)
+        losses.update(**unsup_loss)
 
-        return losses
+        return losses, student_fpn, dift_fpn
 
     def loss_by_gt_instances(self, batch_inputs: Tensor,
                              batch_data_samples: SampleList) -> dict:
@@ -224,7 +224,7 @@ class SemiBaseDiftDetector(BaseDetector):
         return rename_loss_dict('domain_', reweight_loss_dict(losses, 1.0))
 
     def loss_by_gt_instances_weak(self, batch_inputs: Tensor,
-                                    batch_data_samples: SampleList) -> dict:
+                                  batch_data_samples: SampleList) -> dict:
         """Calculate losses from a batch of inputs and ground-truth data
         samples.
 
@@ -296,7 +296,7 @@ class SemiBaseDiftDetector(BaseDetector):
     def loss_by_pseudo_instances_dift(self,
                                       batch_inputs: Tensor,
                                       batch_data_samples: SampleList,
-                                      batch_info: Optional[dict] = None) -> dict:
+                                      batch_info: Optional[dict] = None) -> [dict, Any]:
         """Calculate losses from a batch of inputs and pseudo data samples.
 
         Args:
@@ -315,15 +315,14 @@ class SemiBaseDiftDetector(BaseDetector):
         """
         batch_data_samples = filter_gt_instances(
             batch_data_samples, score_thr=self.semi_train_cfg.cls_pseudo_thr)
-        losses = self.student.loss(batch_inputs, batch_data_samples)
+        losses, student_fpn = self.student.loss(batch_inputs, batch_data_samples, return_feature=True)
         pseudo_instances_num = sum([
             len(data_samples.gt_instances)
             for data_samples in batch_data_samples
         ])
         unsup_weight = self.semi_train_cfg.get(
             'unsup_weight', 1.) if pseudo_instances_num > 0 else 0.
-        return rename_loss_dict('unsup_dift_',
-                                reweight_loss_dict(losses, unsup_weight))
+        return rename_loss_dict('unsup_dift_', reweight_loss_dict(losses, unsup_weight)), student_fpn
 
     @torch.no_grad()
     def get_pseudo_instances(
@@ -345,11 +344,11 @@ class SemiBaseDiftDetector(BaseDetector):
     @torch.no_grad()
     def get_pseudo_instances_dift(
             self, batch_inputs: Tensor, batch_data_samples: SampleList
-    ) -> Tuple[SampleList, Optional[dict]]:
+    ) -> Tuple[SampleList, Optional[dict], Any]:
         """Get pseudo instances from teacher model."""
         self.dift_detector.eval()
-        results_list = self.dift_detector.predict(
-            batch_inputs, batch_data_samples, rescale=False)
+        results_list, dift_fpn = self.dift_detector.predict(
+            batch_inputs, batch_data_samples, rescale=False, return_feature=True)
         batch_info = {}
         for data_samples, results in zip(batch_data_samples, results_list):
             data_samples.gt_instances = results.pred_instances
@@ -357,7 +356,7 @@ class SemiBaseDiftDetector(BaseDetector):
                 data_samples.gt_instances.bboxes,
                 torch.from_numpy(data_samples.homography_matrix).inverse().to(
                     self.data_preprocessor.device), data_samples.ori_shape)
-        return batch_data_samples, batch_info
+        return batch_data_samples, batch_info, dift_fpn
 
     def project_pseudo_instances(self, batch_pseudo_instances: SampleList,
                                  batch_data_samples: SampleList) -> SampleList:

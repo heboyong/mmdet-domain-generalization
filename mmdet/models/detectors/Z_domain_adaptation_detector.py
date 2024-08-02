@@ -71,7 +71,6 @@ class DomainAdaptationDetector(BaseDetector):
                 self.mutual_information_maximization = MIEstimator(256)
                 self.feature_loss = MIMaxLoss(loss_weight=self.feature_loss_weight)
 
-        #print(self.enable_feature_loss, self.feature_loss_type, self.feature_loss_weight)
         self.burn_up_iters = self.train_cfg.detector_cfg.get('burn_up_iters', 0)
         self.local_iter = 0
 
@@ -118,29 +117,28 @@ class DomainAdaptationDetector(BaseDetector):
             losses.update(**self.model.loss_by_gt_instances_domain(multi_batch_inputs['sup_domain'],
                                                                    multi_batch_data_samples['sup_domain']))
             if self.local_iter > self.burn_up_iters:
+                unsup_loss, student_fpn, dift_fpn = self.model.loss_dift(multi_batch_inputs, multi_batch_data_samples)
+                losses.update(**unsup_loss)
                 if self.enable_feature_loss:
-                    student_fpn = self.extract_feat(multi_batch_inputs['unsup_strong'])
-                    dift_fpn = self.extract_feat_from_dift(multi_batch_inputs['unsup_weak'])
 
-                    feature_loss = dict()
                     if self.feature_loss_type in ['l1', 'mse', 'kl']:
+                        feature_loss = dict()
                         feature_loss['feature_loss'] = self.feature_loss(student_fpn[-1], dift_fpn[-1])
                         losses.update(rename_loss_dict(str(self.feature_loss_type) + '_', feature_loss))
 
                     if self.feature_loss_type in ['domain_classifier']:
-                        feature_loss['feature_loss'] = self.domain_loss(student_fpn[-1], dift_fpn[-1])
+                        feature_loss = self.domain_loss(student_fpn[-1], dift_fpn[-1])
                         losses.update(rename_loss_dict(str(self.feature_loss_type) + '_', feature_loss))
 
                     if self.feature_loss_type in ['mutual_information_maximization']:
+                        feature_loss = dict()
                         mi_score = self.mutual_information_maximization(student_fpn[-1], dift_fpn[-1])
                         feature_loss['feature_loss'] = self.feature_loss(mi_score)
                         losses.update(rename_loss_dict(str(self.feature_loss_type) + '_', feature_loss))
-                else:
-                    losses.update(**self.model.loss_dift(multi_batch_inputs, multi_batch_data_samples))
 
             self.local_iter += 1
         else:
-            raise "detector type not in ['UDA','SDA','SemiBase','SoftTeacher','SemiBaseDift'] "
+            raise "detector type not in ['SemiBase','SoftTeacher','SemiBaseDift'] "
         return losses
 
     def predict(self, batch_inputs: Tensor,
@@ -284,8 +282,6 @@ class DomainAdaptationDetector(BaseDetector):
         da_s = self.domain_classifier(grad_reverse(source_neck))
         da_t = self.domain_classifier(grad_reverse(target_neck))
         da_loss = self.da_loss(da_s, da_t)
-        losses_domain['da_loss'] = da_loss
-        domain_loss = rename_loss_dict('domain_classifier_',
-                                       reweight_loss_dict(losses_domain, self.feature_loss_weight))
+        losses_domain['da_loss'] = da_loss*self.feature_loss_weight
 
-        return domain_loss
+        return losses_domain

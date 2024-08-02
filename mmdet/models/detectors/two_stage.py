@@ -140,11 +140,12 @@ class TwoStageDetector(BaseDetector):
             ]
         roi_outs = self.roi_head.forward(x, rpn_results_list,
                                          batch_data_samples)
-        results = results + (roi_outs, )
+        results = results + (roi_outs,)
         return results
 
     def loss(self, batch_inputs: Tensor,
-             batch_data_samples: SampleList) -> dict:
+             batch_data_samples: SampleList,
+             return_feature=False) -> dict:
         """Calculate losses from a batch of inputs and data samples.
 
         Args:
@@ -190,13 +191,16 @@ class TwoStageDetector(BaseDetector):
         roi_losses = self.roi_head.loss(x, rpn_results_list,
                                         batch_data_samples)
         losses.update(roi_losses)
-
-        return losses
+        if not return_feature:
+            return losses
+        else:
+            return losses, x
 
     def predict(self,
                 batch_inputs: Tensor,
                 batch_data_samples: SampleList,
-                rescale: bool = True) -> SampleList:
+                rescale: bool = True,
+                return_feature=False):
         """Predict results from a batch of inputs and data samples with post-
         processing.
 
@@ -225,7 +229,6 @@ class TwoStageDetector(BaseDetector):
 
         assert self.with_bbox, 'Bbox head must be implemented.'
         x = self.extract_feat(batch_inputs)
-
         # If there are no pre-defined proposals, use RPN to get proposals
         if batch_data_samples[0].get('proposals', None) is None:
             rpn_results_list = self.rpn_head.predict(
@@ -240,4 +243,7 @@ class TwoStageDetector(BaseDetector):
 
         batch_data_samples = self.add_pred_to_datasample(
             batch_data_samples, results_list)
-        return batch_data_samples
+        if not return_feature:
+            return batch_data_samples
+        else:
+            return batch_data_samples, x

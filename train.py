@@ -13,7 +13,7 @@ from mmengine.runner import Runner
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
     parser.add_argument('--config', help='train config file path',
-                        default='DA/Ours/dwd/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu.py')
+                        default='DA/Ours/dwd/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_mse.py')
     parser.add_argument('--work-dir', help='the dir to save logs and models')
     parser.add_argument(
         '--amp',
