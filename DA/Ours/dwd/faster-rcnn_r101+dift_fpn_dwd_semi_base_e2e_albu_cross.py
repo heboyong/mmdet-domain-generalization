@@ -1,7 +1,7 @@
 _base_ = [
     '../../_base_/models/semi_faster_rcnn_r101+dift_fpn.py',
     '../../_base_/da_setting/semi_e2e_20k_0.1backbone.py',
-    '../../_base_/datasets/dwd/semi_dwd.py'
+    '../../_base_/datasets/dwd/semi_dwd_albu.py'
 ]
 
 detector = _base_.model
@@ -25,10 +25,10 @@ model = dict(
         type='MultiBranchDataPreprocessor',
         data_preprocessor=detector.data_preprocessor),
     train_cfg=dict(
-        detector_cfg=dict(type='SemiBaseDift', burn_up_iters=40000),
+        detector_cfg=dict(type='SemiBaseDift', burn_up_iters=_base_.burn_up_iters),
         feature_loss_cfg=dict(
             enable_feature_loss=False,
-            feature_loss_type='l1',
+            feature_loss_type='mse',
             # ['domain_classifier','mutual_information_maximization','l1','mse','kl']
             feature_loss_weight=1.0
         ),
@@ -36,4 +36,5 @@ model = dict(
 )
 
 optim_wrapper = dict(clip_grad=dict(max_norm=35, norm_type=2))
+
 train_cfg = dict(val_interval=4000)

@@ -1,21 +1,16 @@
-#bash tools/dist_test_dg.sh  \
-#work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_-1/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_-1.py \
-#work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_-1/iter_20000.pth \
-#8
-#
-#bash tools/dist_test_dg.sh  \
-#work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_0.0004/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_0.0004.py \
-#work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_0.0004/iter_20000.pth \
-#8
-
 bash tools/dist_test_dg.sh  \
-work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_mse/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_mse.py \
-work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_mse/iter_8000.pth \
+work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_cross/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_cross.py \
+work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_cross/iter_20000.pth \
 8
 
 bash tools/dist_test_dg.sh  \
-work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_mse/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_mse.py \
-work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_mse/iter_12000.pth \
+work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_mse_cross/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_mse_cross.py \
+work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_albu_mse_cross/iter_20000.pth \
+8
+
+bash tools/dist_test_dg.sh  \
+work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_nosemi/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_nosemi.py \
+work_dirs/faster-rcnn_r101+dift_fpn_dwd_semi_base_e2e_nosemi/iter_20000.pth \
 8
 
 #Folder="work_dirs"

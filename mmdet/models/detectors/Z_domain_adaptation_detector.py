@@ -116,25 +116,28 @@ class DomainAdaptationDetector(BaseDetector):
                                                                    multi_batch_data_samples['sup_strong']))
             losses.update(**self.model.loss_by_gt_instances_domain(multi_batch_inputs['sup_domain'],
                                                                    multi_batch_data_samples['sup_domain']))
-            if self.local_iter > self.burn_up_iters:
-                unsup_loss, student_fpn, dift_fpn = self.model.loss_dift(multi_batch_inputs, multi_batch_data_samples)
-                losses.update(**unsup_loss)
-                if self.enable_feature_loss:
+            # if self.local_iter > self.burn_up_iters:
+            # unsup_loss, student_fpn, dift_fpn = self.model.loss_dift(multi_batch_inputs, multi_batch_data_samples)
+            # losses.update(**unsup_loss)
+            dift_fpn = self.extract_feat_from_dift(multi_batch_inputs['sup_strong'])
+            student_fpn = self.extract_feat(multi_batch_inputs['sup_strong'])
+            losses.update(**self.cross_loss_dift_to_student(multi_batch_data_samples['sup_strong'], dift_fpn))
 
-                    if self.feature_loss_type in ['l1', 'mse', 'kl']:
-                        feature_loss = dict()
-                        feature_loss['feature_loss'] = self.feature_loss(student_fpn[-1], dift_fpn[-1])
-                        losses.update(rename_loss_dict(str(self.feature_loss_type) + '_', feature_loss))
+            if self.enable_feature_loss:
+                if self.feature_loss_type in ['l1', 'mse', 'kl']:
+                    feature_loss = dict()
+                    feature_loss['feature_loss'] = self.feature_loss(student_fpn[-1], dift_fpn[-1])
+                    losses.update(rename_loss_dict(str(self.feature_loss_type) + '_', feature_loss))
 
-                    if self.feature_loss_type in ['domain_classifier']:
-                        feature_loss = self.domain_loss(student_fpn[-1], dift_fpn[-1])
-                        losses.update(rename_loss_dict(str(self.feature_loss_type) + '_', feature_loss))
+                if self.feature_loss_type in ['domain_classifier']:
+                    feature_loss = self.domain_loss(student_fpn[-1], dift_fpn[-1])
+                    losses.update(rename_loss_dict(str(self.feature_loss_type) + '_', feature_loss))
 
-                    if self.feature_loss_type in ['mutual_information_maximization']:
-                        feature_loss = dict()
-                        mi_score = self.mutual_information_maximization(student_fpn[-1], dift_fpn[-1])
-                        feature_loss['feature_loss'] = self.feature_loss(mi_score)
-                        losses.update(rename_loss_dict(str(self.feature_loss_type) + '_', feature_loss))
+                if self.feature_loss_type in ['mutual_information_maximization']:
+                    feature_loss = dict()
+                    mi_score = self.mutual_information_maximization(student_fpn[-1], dift_fpn[-1])
+                    feature_loss['feature_loss'] = self.feature_loss(mi_score)
+                    losses.update(rename_loss_dict(str(self.feature_loss_type) + '_', feature_loss))
 
             self.local_iter += 1
         else:
@@ -227,12 +230,10 @@ class DomainAdaptationDetector(BaseDetector):
 
         return x_neck
 
-    def cross_loss_dift(self, batch_inputs: Tensor, batch_data_samples: SampleList):
-        dift_backbone = self.model.dift_detector.backbone(batch_inputs)
-        dift_neck = self.model.dift_detector.neck(dift_backbone)
+    def cross_loss_dift_to_student(self, batch_data_samples: SampleList, dift_fpn):
         losses = dict()
         if not self.with_rpn:
-            detector_loss = self.model.student.bbox_head.loss(dift_neck, batch_data_samples)
+            detector_loss = self.model.student.bbox_head.loss(dift_fpn, batch_data_samples)
             losses.update(rename_loss_dict('dift_to_student_cross_', detector_loss))
         else:
             proposal_cfg = self.model.student.train_cfg.get('rpn_proposal', self.model.student.test_cfg.rpn)
@@ -241,40 +242,15 @@ class DomainAdaptationDetector(BaseDetector):
             for data_sample in rpn_data_samples:
                 data_sample.gt_instances.labels = torch.zeros_like(data_sample.gt_instances.labels)
             rpn_losses, rpn_results_list = self.model.student.rpn_head.loss_and_predict(
-                dift_neck, rpn_data_samples, proposal_cfg=proposal_cfg)
+                dift_fpn, rpn_data_samples, proposal_cfg=proposal_cfg)
             # avoid get same name with roi_head loss
             keys = rpn_losses.keys()
             for key in list(keys):
                 if 'loss' in key and 'rpn' not in key:
                     rpn_losses[f'rpn_{key}'] = rpn_losses.pop(key)
             losses.update(rename_loss_dict('dift_to_student_cross_', rpn_losses))
-            roi_losses = self.model.student.roi_head.loss(dift_neck, rpn_results_list, batch_data_samples)
+            roi_losses = self.model.student.roi_head.loss(dift_fpn, rpn_results_list, batch_data_samples)
             losses.update(rename_loss_dict('dift_to_student_cross_', roi_losses))
-        return losses
-
-    def cross_loss_student(self, batch_inputs: Tensor, batch_data_samples: SampleList):
-        student_backbone = self.model.dift_detector.backbone(batch_inputs)
-        student_neck = self.model.dift_detector.neck(student_backbone)
-        losses = dict()
-        if not self.with_rpn:
-            detector_loss = self.model.dift_detector.bbox_head.loss(student_neck, batch_data_samples)
-            losses.update(rename_loss_dict('student_to_dift_cross_', detector_loss))
-        else:
-            proposal_cfg = self.model.dift_detector.train_cfg.get('rpn_proposal', self.model.dift_detector.test_cfg.rpn)
-            rpn_data_samples = copy.deepcopy(batch_data_samples)
-            # set cat_id of gt_labels to 0 in RPN
-            for data_sample in rpn_data_samples:
-                data_sample.gt_instances.labels = torch.zeros_like(data_sample.gt_instances.labels)
-            rpn_losses, rpn_results_list = self.model.dift_detector.rpn_head.loss_and_predict(
-                student_neck, rpn_data_samples, proposal_cfg=proposal_cfg)
-            # avoid get same name with roi_head loss
-            keys = rpn_losses.keys()
-            for key in list(keys):
-                if 'loss' in key and 'rpn' not in key:
-                    rpn_losses[f'rpn_{key}'] = rpn_losses.pop(key)
-            losses.update(rename_loss_dict('student_to_dift_cross_', rpn_losses))
-            roi_losses = self.model.dift_detector.roi_head.loss(student_neck, rpn_results_list, batch_data_samples)
-            losses.update(rename_loss_dict('student_to_dift_cross_', roi_losses))
         return losses
 
     def domain_loss(self, source_neck, target_neck):
@@ -282,6 +258,6 @@ class DomainAdaptationDetector(BaseDetector):
         da_s = self.domain_classifier(grad_reverse(source_neck))
         da_t = self.domain_classifier(grad_reverse(target_neck))
         da_loss = self.da_loss(da_s, da_t)
-        losses_domain['da_loss'] = da_loss*self.feature_loss_weight
+        losses_domain['da_loss'] = da_loss * self.feature_loss_weight
 
         return losses_domain
